@@ -8,6 +8,7 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
     Square[][] squares = new Square[8][8];
     JLayeredPane layeredPane = new JLayeredPane();
     Piece lastClickedPiece;
+    Square lastClickedSquare;
 
     int xAdjustment;
     int yAdjustment;
@@ -97,9 +98,14 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
             return;
         }
 
+        int xMax = layeredPane.getWidth() - lastClickedPiece.getWidth();
+        int x = Math.min(Math.max(e.getX() + xAdjustment, 0), xMax);
+
+        int yMax = layeredPane.getHeight() - lastClickedPiece.getHeight();
+        int y = Math.min(Math.max(e.getY() + yAdjustment, 0), yMax);
 
 
-        lastClickedPiece.setLocation(e.getX() + xAdjustment, e.getY() + yAdjustment);
+        lastClickedPiece.setLocation(x, y);
     }
 
     @Override
@@ -113,13 +119,14 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
         }
 
         Point parentLocation = c.getParent().getLocation();
-        System.out.println("parentLocation: " + parentLocation);
-        System.out.println(e.getX() + ", " + e.getY());
+
         xAdjustment = parentLocation.x - e.getX();
         yAdjustment = parentLocation.y - e.getY();
 
         lastClickedPiece = (Piece) c;
-        lastClickedPiece.setLocation(e.getX() + xAdjustment, e.getY() + yAdjustment);
+        lastClickedPiece.setLocation(parentLocation.x, parentLocation.y);
+
+        lastClickedSquare = (Square) lastClickedPiece.getParent();
 
         layeredPane.add(lastClickedPiece, JLayeredPane.DRAG_LAYER);
         layeredPane.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
