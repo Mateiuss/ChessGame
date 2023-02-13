@@ -1,7 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 
-public class Square extends JLabel {
+public class Square extends JPanel {
     Square() {
         this.setOpaque(true);
         this.setBackground(Color.WHITE);
