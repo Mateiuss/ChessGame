@@ -8,7 +8,6 @@ public class King extends Piece {
         } else {
             icon = blackKing;
         }
-        this.setIcon(new ImageIcon(icon.getImage().getScaledInstance(96, 96, Image.SCALE_SMOOTH)));
-        this.addMouseListener(this);
+        this.setIcon(icon);
     }
 }

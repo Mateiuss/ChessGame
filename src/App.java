@@ -6,12 +6,13 @@ public class App extends JFrame {
 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setTitle("MyChess");
-        this.add(board);
+        this.add(board.layeredPane);
+        this.setResizable(false);
         this.pack();
         this.setVisible(true);
     }
 
     public static void main(String[] args) {
-        new App();
+        App app = new App();
     }
 }

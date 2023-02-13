@@ -8,7 +8,6 @@ public class Bishop extends Piece {
         } else {
             icon = blackBishop;
         }
-        this.setIcon(new ImageIcon(icon.getImage().getScaledInstance(96, 96, Image.SCALE_SMOOTH)));
-        this.addMouseListener(this);
+        this.setIcon(icon);
     }
 }

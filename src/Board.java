@@ -1,10 +1,22 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 
-public class Board extends JPanel {
+public class Board extends JPanel implements MouseListener, MouseMotionListener {
     Square[][] squares = new Square[8][8];
+    JLayeredPane layeredPane = new JLayeredPane();
+    Piece lastClickedPiece;
+
+    int xAdjustment;
+    int yAdjustment;
 
     public Board() {
+        layeredPane.setPreferredSize(new Dimension(768, 768));
+        layeredPane.addMouseListener(this);
+        layeredPane.addMouseMotionListener(this);
+
         this.setLayout(new GridLayout(8, 8));
         this.setSize(768, 768);
         this.setPreferredSize(new Dimension(768, 768));
@@ -31,19 +43,26 @@ public class Board extends JPanel {
             }
         }
 
-        PieceFactory pieceFactory = PieceFactory.getInstance();
+        layeredPane.add(this, JLayeredPane.DEFAULT_LAYER);
+
         addPieces();
 
         this.setVisible(true);
     }
 
     public void addPiece(Piece piece, int x, int y) {
+        squares[x][y].piece = piece;
         squares[x][y].add(piece);
+    }
+
+    void testBoard() {
+        PieceFactory pieceFactory = PieceFactory.getInstance();
+        addPiece(pieceFactory.createPiece("Queen", true), 0, 0);
+        addPiece(pieceFactory.createPiece("Queen", false), 7, 7);
     }
 
     public void addPieces() {
         PieceFactory pieceFactory = PieceFactory.getInstance();
-       // white should be down
 
         for (int i = 0; i < 8; i++) {
             addPiece(pieceFactory.createPiece("Pawn", true), 6, i);
@@ -71,4 +90,81 @@ public class Board extends JPanel {
         addPiece(pieceFactory.createPiece("King", true), 7, 4);
         addPiece(pieceFactory.createPiece("King", false), 0, 4);
     }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+        if (lastClickedPiece == null) {
+            return;
+        }
+
+
+
+        lastClickedPiece.setLocation(e.getX() + xAdjustment, e.getY() + yAdjustment);
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        lastClickedPiece = null;
+
+        Component c = this.findComponentAt(e.getX(), e.getY());
+
+        if (c instanceof JPanel) {
+            return;
+        }
+
+        Point parentLocation = c.getParent().getLocation();
+        System.out.println("parentLocation: " + parentLocation);
+        System.out.println(e.getX() + ", " + e.getY());
+        xAdjustment = parentLocation.x - e.getX();
+        yAdjustment = parentLocation.y - e.getY();
+
+        lastClickedPiece = (Piece) c;
+        lastClickedPiece.setLocation(e.getX() + xAdjustment, e.getY() + yAdjustment);
+
+        layeredPane.add(lastClickedPiece, JLayeredPane.DRAG_LAYER);
+        layeredPane.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        layeredPane.setCursor(null);
+
+        if (lastClickedPiece == null) {
+            return;
+        }
+
+        lastClickedPiece.setVisible(false);
+        layeredPane.remove(lastClickedPiece);
+        lastClickedPiece.setVisible(true);
+
+        int xMax = layeredPane.getWidth() - lastClickedPiece.getWidth();
+        int x = Math.min(e.getX(), xMax);
+        x = Math.max(x, 0);
+
+        int yMax = layeredPane.getHeight() - lastClickedPiece.getHeight();
+        int y = Math.min(e.getY(), yMax);
+        y = Math.max(y, 0);
+
+        Component c = this.findComponentAt(x, y);
+
+        if (c instanceof JLabel) {
+            Container parent = c.getParent();
+            parent.remove(0);
+            parent.add(lastClickedPiece);
+            parent.validate();
+        } else {
+            Container parent = (Container) c;
+            parent.add(lastClickedPiece);
+            parent.validate();
+        }
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {}
+    @Override
+    public void mouseExited(MouseEvent e) {}
+    @Override
+    public void mouseMoved(MouseEvent e) {}
+    @Override
+    public void mouseClicked(MouseEvent e) {}
 }
