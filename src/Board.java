@@ -71,6 +71,42 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
         addPiece(pieceFactory.createPiece("Queen", false), 7, 7);
     }
 
+    void printBoard() {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (squares[i][j].piece != null) {
+                    switch (squares[i][j].piece.getClass().getSimpleName()) {
+                        case "WhitePawn":
+                            System.out.print("P");
+                            break;
+                        case "BlackPawn":
+                            System.out.print("P");
+                            break;
+                        case "Rook":
+                            System.out.print("R");
+                            break;
+                        case "Knight":
+                            System.out.print("N");
+                            break;
+                        case "Bishop":
+                            System.out.print("B");
+                            break;
+                        case "Queen":
+                            System.out.print("Q");
+                            break;
+                        case "King":
+                            System.out.print("K");
+                            break;
+                    }
+                    System.out.print("  ");
+                } else {
+                    System.out.print("0  ");
+                }
+            }
+            System.out.println();
+        }
+    }
+
     public void addPieces() {
         PieceFactory pieceFactory = PieceFactory.getInstance();
 
@@ -99,6 +135,41 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
 
         addPiece(pieceFactory.createPiece("King", true), 7, 4);
         addPiece(pieceFactory.createPiece("King", false), 0, 4);
+    }
+
+    public boolean wouldTheMovePutMeInCheck(Square square) {
+        printBoard();
+        Piece tempPiece = square.piece;
+        square.piece = lastClickedPiece;
+        System.out.println();
+        printBoard();
+
+        Square myKingsSquare = null;
+
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (squares[i][j].piece != null && squares[i][j].piece.isWhite == lastClickedPiece.isWhite && squares[i][j].piece instanceof King) {
+                    myKingsSquare = squares[i][j];
+                }
+            }
+        }
+
+        System.out.println("myKingsSquare: " + (int)myKingsSquare.getLocation().getX() / 96 + ", " + (int)myKingsSquare.getLocation().getY() / 96);
+
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (squares[i][j].piece != null && squares[i][j].piece.isWhite != lastClickedPiece.isWhite) {
+                    if (squares[i][j].piece.canCapture(squares[i][j].getLocation(), myKingsSquare.getLocation())) {
+                        System.out.println("Checking: " + squares[i][j].piece.getClass().getSimpleName() + " at " + squares[i][j].getLocation().getX() / 96 + ", " + squares[i][j].getLocation().getY() / 96);
+                        square.piece = tempPiece;
+                        return true;
+                    }
+                }
+            }
+        }
+
+        square.piece = tempPiece;
+        return false;
     }
 
     @Override
@@ -165,8 +236,9 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
         Component c = this.findComponentAt(x, y);
         if (c instanceof JLabel) {
             if (((Piece)c).isWhite == lastClickedPiece.isWhite || lastClickedPiece
-                    .canCapture(lastClickedSquare.getLocation(), c.getParent().getLocation()) == false) {
+                    .canCapture(lastClickedSquare.getLocation(), c.getParent().getLocation()) == false || wouldTheMovePutMeInCheck((Square)c.getParent())) {
                 lastClickedSquare.add(lastClickedPiece);
+                lastClickedSquare.piece = lastClickedPiece;
                 lastClickedSquare.validate();
                 return;
             }
@@ -177,8 +249,9 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
             parent.add(lastClickedPiece);
             parent.validate();
         } else {
-            if (lastClickedPiece.canMove(lastClickedSquare.getLocation(), c.getLocation()) == false) {
+            if (lastClickedPiece.canMove(lastClickedSquare.getLocation(), c.getLocation()) == false || wouldTheMovePutMeInCheck((Square)c) == true) {
                 lastClickedSquare.add(lastClickedPiece);
+                lastClickedSquare.piece = lastClickedPiece;
                 lastClickedSquare.validate();
                 return;
             }

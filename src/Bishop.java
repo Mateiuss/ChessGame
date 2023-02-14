@@ -23,14 +23,11 @@ public class Bishop extends Piece {
         if (Math.abs((int)oldMatrixPoint.getX() - (int)newMatrixPoint.getX()) != Math.abs((int)oldMatrixPoint.getY() - (int)newMatrixPoint.getY())) {
             return false;
         }
-        System.out.println("Bishop can move");
 
         Board board = Board.getInstance();
 
         int xIsGrowing = oldMatrixPoint.getX() < newMatrixPoint.getX() ? 1 : -1;
         int yIsGrowing = oldMatrixPoint.getY() < newMatrixPoint.getY() ? 1 : -1;
-
-        System.out.println(xIsGrowing + " " + yIsGrowing);
 
         int x = (int) oldMatrixPoint.getX() + xIsGrowing;
         int y = (int) oldMatrixPoint.getY() + yIsGrowing;

@@ -11,7 +11,7 @@ public class PieceFactory {
         return instance;
     }
 
-    public static Piece createPiece(String pieceType, boolean isWhite) {
+    public Piece createPiece(String pieceType, boolean isWhite) {
         switch (pieceType) {
             case "Queen":
                 return new Queen(isWhite);

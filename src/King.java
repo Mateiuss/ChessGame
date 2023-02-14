@@ -19,8 +19,6 @@ public class King extends Piece {
         int dx = (int) newMatrixPoint.getX() - (int) oldMatrixPoint.getX();
         int dy = (int) newMatrixPoint.getY() - (int) oldMatrixPoint.getY();
 
-        int rateOfGrowthX = dx > 0 ? 1 : -1;
-
         if (dx == 0 && dy == 0) {
             return false;
         }
