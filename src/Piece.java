@@ -1,43 +1,33 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
 public abstract class Piece extends JLabel{
     ImageIcon icon;
     static int curr_id = 0;
     int id;
+    boolean neverMoved = true;
+    boolean isWhite;
 
     public Piece() {
         id = curr_id;
         curr_id++;
     }
 
-//    @Override
-//    public void mouseClicked(MouseEvent e) {
-//        System.out.println("Clicked by " + id);
-//        if (lastClicked)
-//    }
-//
-//    @Override
-//    public void mousePressed(MouseEvent e) {
-//        System.out.println("Pressed by " + id);
-//    }
-//
-//    @Override
-//    public void mouseReleased(MouseEvent e) {
-//        System.out.println("Released by " + id);
-//    }
-//
-//    @Override
-//    public void mouseEntered(MouseEvent e) {
-//
-//    }
-//
-//    @Override
-//    public void mouseExited(MouseEvent e) {
-//
-//    }
+    public boolean canMove(Point oldPoint, Point newPoint) {
+        return false;
+    }
+
+    public boolean canCapture(Point oldPoint, Point newPoint) {
+        return false;
+    }
+
+    public static Point getMatrixPoint(Point point) {
+        int x = (int) point.getX();
+        int y = (int) point.getY();
+        x = x / 96;
+        y = y / 96;
+        return new Point(x, y);
+    }
 
     static ImageIcon whiteQueen = new ImageIcon(new ImageIcon("Pieces/WhiteQueen.png").getImage().getScaledInstance(96, 96, Image.SCALE_SMOOTH));
     static ImageIcon blackQueen = new ImageIcon(new ImageIcon("Pieces/BlackQueen.png").getImage().getScaledInstance(96, 96, Image.SCALE_SMOOTH));

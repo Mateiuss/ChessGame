@@ -13,7 +13,16 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
     int xAdjustment;
     int yAdjustment;
 
-    public Board() {
+    private static Board instance = null;
+
+    public static Board getInstance() {
+        if (instance == null) {
+            instance = new Board();
+        }
+        return instance;
+    }
+
+    private Board() {
         layeredPane.setPreferredSize(new Dimension(768, 768));
         layeredPane.addMouseListener(this);
         layeredPane.addMouseMotionListener(this);
@@ -127,6 +136,7 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
         lastClickedPiece.setLocation(parentLocation.x, parentLocation.y);
 
         lastClickedSquare = (Square) lastClickedPiece.getParent();
+        lastClickedSquare.piece = null;
 
         layeredPane.add(lastClickedPiece, JLayeredPane.DRAG_LAYER);
         layeredPane.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
@@ -153,14 +163,28 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
         y = Math.max(y, 0);
 
         Component c = this.findComponentAt(x, y);
-
         if (c instanceof JLabel) {
+            if (((Piece)c).isWhite == lastClickedPiece.isWhite || lastClickedPiece
+                    .canCapture(lastClickedSquare.getLocation(), c.getParent().getLocation()) == false) {
+                lastClickedSquare.add(lastClickedPiece);
+                lastClickedSquare.validate();
+                return;
+            }
+            lastClickedPiece.neverMoved = false;
             Container parent = c.getParent();
+            ((Square)parent).piece = lastClickedPiece;
             parent.remove(0);
             parent.add(lastClickedPiece);
             parent.validate();
         } else {
+            if (lastClickedPiece.canMove(lastClickedSquare.getLocation(), c.getLocation()) == false) {
+                lastClickedSquare.add(lastClickedPiece);
+                lastClickedSquare.validate();
+                return;
+            }
+            lastClickedPiece.neverMoved = false;
             Container parent = (Container) c;
+            ((Square)parent).piece = lastClickedPiece;
             parent.add(lastClickedPiece);
             parent.validate();
         }

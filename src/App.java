@@ -2,7 +2,7 @@ import javax.swing.*;
 
 public class App extends JFrame {
     public App() {
-        Board board = new Board();
+        Board board = Board.getInstance();
 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setTitle("MyChess");

@@ -9,5 +9,14 @@ public class Queen extends Piece {
             icon = blackQueen;
         }
         this.setIcon(icon);
+        this.isWhite = isWhite;
+    }
+
+    public boolean canMove(Point oldPoint, Point newPoint) {
+        return new Bishop(true).canMove(oldPoint, newPoint) || new Rook(false).canMove(oldPoint, newPoint);
+    }
+
+    public boolean canCapture(Point oldPoint, Point newPoint) {
+        return canMove(oldPoint, newPoint);
     }
 }
