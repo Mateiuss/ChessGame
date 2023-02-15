@@ -55,7 +55,7 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
 
         layeredPane.add(this, JLayeredPane.DEFAULT_LAYER);
 
-        addPieces();
+        testBoard();
 
         this.setVisible(true);
     }
@@ -67,8 +67,11 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
 
     void testBoard() {
         PieceFactory pieceFactory = PieceFactory.getInstance();
-        addPiece(pieceFactory.createPiece("Queen", true), 0, 0);
-        addPiece(pieceFactory.createPiece("Queen", false), 7, 7);
+        // add two kings and two white rooks
+        addPiece(pieceFactory.createPiece("King", true), 0, 4);
+        addPiece(pieceFactory.createPiece("King", false), 7, 4);
+        addPiece(pieceFactory.createPiece("Rook", true), 0, 0);
+        addPiece(pieceFactory.createPiece("Rook", true), 0, 7);
     }
 
     void printBoard() {
@@ -138,11 +141,8 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
     }
 
     public boolean wouldTheMovePutMeInCheck(Square square) {
-        printBoard();
         Piece tempPiece = square.piece;
         square.piece = lastClickedPiece;
-        System.out.println();
-        printBoard();
 
         Square myKingsSquare = null;
 
@@ -154,13 +154,10 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
             }
         }
 
-        System.out.println("myKingsSquare: " + (int)myKingsSquare.getLocation().getX() / 96 + ", " + (int)myKingsSquare.getLocation().getY() / 96);
-
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 if (squares[i][j].piece != null && squares[i][j].piece.isWhite != lastClickedPiece.isWhite) {
                     if (squares[i][j].piece.canCapture(squares[i][j].getLocation(), myKingsSquare.getLocation())) {
-                        System.out.println("Checking: " + squares[i][j].piece.getClass().getSimpleName() + " at " + squares[i][j].getLocation().getX() / 96 + ", " + squares[i][j].getLocation().getY() / 96);
                         square.piece = tempPiece;
                         return true;
                     }
@@ -170,6 +167,35 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
 
         square.piece = tempPiece;
         return false;
+    }
+
+    public boolean verifyIfTheOpponentGotCheckmated (boolean isWhite) {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                lastClickedSquare = squares[i][j];
+                lastClickedPiece = squares[i][j].piece;
+                lastClickedSquare.piece = null;
+                if (lastClickedPiece != null && lastClickedPiece.isWhite == isWhite) {
+                    for (int k = 0; k < 8; k++) {
+                        for (int l = 0; l < 8; l++) {
+                            if (squares[k][l].piece != null && squares[k][l].piece.isWhite == isWhite) {
+                                continue;
+                            }
+                            if (lastClickedPiece.canMove(lastClickedSquare.getLocation(), squares[k][l].getLocation()) ||
+                                lastClickedPiece.canCapture(lastClickedSquare.getLocation(), squares[k][l].getLocation())) {
+                                if (!wouldTheMovePutMeInCheck(squares[k][l])) {
+                                    lastClickedSquare.piece = lastClickedPiece;
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+                }
+                lastClickedSquare.piece = lastClickedPiece;
+            }
+        }
+
+        return true;
     }
 
     @Override
@@ -261,6 +287,12 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
             parent.add(lastClickedPiece);
             parent.validate();
         }
+
+        boolean oppnentsColor = !lastClickedPiece.isWhite;
+        if (verifyIfTheOpponentGotCheckmated(oppnentsColor)) {
+            JOptionPane.showMessageDialog(null, "Checkmate! " + (oppnentsColor ? "Black" : "White") + " wins!");
+        }
+
     }
 
     @Override
