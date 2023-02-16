@@ -1,6 +1,3 @@
-import javax.swing.*;
-import java.awt.*;
-
 public class Bishop extends Piece {
     public Bishop(boolean isWhite) {
         if (isWhite) {
@@ -12,37 +9,44 @@ public class Bishop extends Piece {
         this.isWhite = isWhite;
     }
 
-    public boolean canMove(Point oldPoint, Point newPoint) {
-        Point oldMatrixPoint = getMatrixPoint(oldPoint);
-        Point newMatrixPoint = getMatrixPoint(newPoint);
+    public Bishop(int boardX, int boardY) {
+        this.boardX = boardX;
+        this.boardY = boardY;
+    }
 
-        if (oldMatrixPoint.getX() == newMatrixPoint.getX() && oldMatrixPoint.getY() == newMatrixPoint.getY()) {
+    public boolean canMove(Square newSquare) {
+        if (newSquare.getBoardX() == this.boardX && newSquare.getBoardY() == this.boardY) {
             return false;
         }
 
-        if (Math.abs((int)oldMatrixPoint.getX() - (int)newMatrixPoint.getX()) != Math.abs((int)oldMatrixPoint.getY() - (int)newMatrixPoint.getY())) {
+        if (Math.abs(newSquare.getBoardX() - this.boardX) != Math.abs(newSquare.getBoardY() - this.boardY)) {
             return false;
         }
 
         Board board = Board.getInstance();
 
-        int xIsGrowing = oldMatrixPoint.getX() < newMatrixPoint.getX() ? 1 : -1;
-        int yIsGrowing = oldMatrixPoint.getY() < newMatrixPoint.getY() ? 1 : -1;
+        int xGrowth = this.boardX < newSquare.getBoardX() ? 1 : -1;
+        int yGrowth = this.boardY < newSquare.getBoardY() ? 1 : -1;
 
-        int x = (int) oldMatrixPoint.getX() + xIsGrowing;
-        int y = (int) oldMatrixPoint.getY() + yIsGrowing;
-        while (x != (int) newMatrixPoint.getX() && y != (int) newMatrixPoint.getY()) {
+        int x = this.boardX + xGrowth;
+        int y = this.boardY + yGrowth;
+
+        while (x != newSquare.getBoardX() && y != newSquare.getBoardY()) {
             if (board.squares[y][x].piece != null) {
                 return false;
             }
-            x += xIsGrowing;
-            y += yIsGrowing;
+            x += xGrowth;
+            y += yGrowth;
         }
 
         return true;
     }
 
-    public boolean canCapture(Point oldPoint, Point newPoint) {
-        return canMove(oldPoint, newPoint);
+    public boolean canCapture(Square newSquare) {
+        if (newSquare.piece == null || newSquare.piece.isWhite == this.isWhite) {
+            return false;
+        }
+
+        return canMove(newSquare);
     }
 }

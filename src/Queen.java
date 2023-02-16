@@ -1,6 +1,3 @@
-import javax.swing.*;
-import java.awt.*;
-
 public class Queen extends Piece {
     public Queen(boolean isWhite) {
         if (isWhite) {
@@ -12,11 +9,14 @@ public class Queen extends Piece {
         this.isWhite = isWhite;
     }
 
-    public boolean canMove(Point oldPoint, Point newPoint) {
-        return new Bishop(true).canMove(oldPoint, newPoint) || new Rook(false).canMove(oldPoint, newPoint);
+    public boolean canMove(Square newSquare) {
+        return new Bishop(this.boardX, this.boardY).canMove(newSquare) || new Rook(this.boardX, this.boardY).canMove(newSquare);
     }
 
-    public boolean canCapture(Point oldPoint, Point newPoint) {
-        return canMove(oldPoint, newPoint);
+    public boolean canCapture(Square newSquare) {
+        if (newSquare.piece == null || newSquare.piece.isWhite == this.isWhite) {
+            return false;
+        }
+        return canMove(newSquare);
     }
 }

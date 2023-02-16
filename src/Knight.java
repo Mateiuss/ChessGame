@@ -15,12 +15,9 @@ public class Knight extends Piece {
     private int[] xMoves = {1, 2, 2, 1, -1, -2, -2, -1};
     private int[] yMoves = {2, 1, -1, -2, -2, -1, 1, 2};
 
-    public boolean canMove(Point oldPoint, Point newPoint) {
-        Point oldMatrixPoint = getMatrixPoint(oldPoint);
-        Point newMatrixPoint = getMatrixPoint(newPoint);
-
-        int xDiff = (int) (newMatrixPoint.getX() - oldMatrixPoint.getX());
-        int yDiff = (int) (newMatrixPoint.getY() - oldMatrixPoint.getY());
+    public boolean canMove(Square newSquare) {
+        int xDiff = (int) (newSquare.getBoardX() - this.boardX);
+        int yDiff = (int) (newSquare.getBoardY() - this.boardY);
 
         for (int i = 0; i < xMoves.length; i++) {
             if (xDiff == xMoves[i] && yDiff == yMoves[i]) {
@@ -30,7 +27,10 @@ public class Knight extends Piece {
         return false;
     }
 
-    public boolean canCapture(Point oldPoint, Point newPoint) {
-        return canMove(oldPoint, newPoint);
+    public boolean canCapture(Square newSquare) {
+        if (newSquare.piece == null || newSquare.piece.isWhite == this.isWhite) {
+            return false;
+        }
+        return canMove(newSquare);
     }
 }

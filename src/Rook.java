@@ -1,6 +1,3 @@
-import javax.swing.*;
-import java.awt.*;
-
 public class Rook extends Piece {
     public Rook(boolean isWhite) {
         if (isWhite) {
@@ -12,35 +9,29 @@ public class Rook extends Piece {
         this.isWhite = isWhite;
     }
 
-    public boolean canMove(Point oldPoint, Point newPoint) {
-        Point oldMatrixPoint = getMatrixPoint(oldPoint);
-        Point newMatrixPoint = getMatrixPoint(newPoint);
+    public Rook(int x, int y) {
+        this.boardX = x;
+        this.boardY = y;
+    }
 
-        if (oldMatrixPoint.getX() == newMatrixPoint.getX() && oldMatrixPoint.getY() == newMatrixPoint.getY()) {
+    public boolean canMove(Square newSquare) {
+        if (newSquare.getBoardX() == this.boardX && newSquare.getBoardY() == this.boardY) {
             return false;
         }
 
-        if (oldMatrixPoint.getX() != newMatrixPoint.getX() && oldMatrixPoint.getY() != newMatrixPoint.getY()) {
+        if (newSquare.getBoardX() != this.boardX && newSquare.getBoardY() != this.boardY) {
             return false;
         }
 
         Board board = Board.getInstance();
 
-        int xIsGrowing;
-        int yIsGrowing;
+        int xIsGrowing = this.boardX < newSquare.getBoardX() ? 1 : this.boardX == newSquare.getBoardX() ? 0 : -1;
+        int yIsGrowing = this.boardY < newSquare.getBoardY() ? 1 : this.boardY == newSquare.getBoardY() ? 0 : -1;
 
-        if (oldMatrixPoint.getX() == newMatrixPoint.getX()) {
-            xIsGrowing = 0;
-            yIsGrowing = oldMatrixPoint.getY() < newMatrixPoint.getY() ? 1 : -1;
-        } else {
-            xIsGrowing = oldMatrixPoint.getX() < newMatrixPoint.getX() ? 1 : -1;
-            yIsGrowing = 0;
-        }
+        int x = this.boardX + xIsGrowing;
+        int y = this.boardY + yIsGrowing;
 
-        int x = (int) oldMatrixPoint.getX() + xIsGrowing;
-        int y = (int) oldMatrixPoint.getY() + yIsGrowing;
-
-        while ((x != (int) newMatrixPoint.getX() && yIsGrowing == 0) || (y != (int) newMatrixPoint.getY() && xIsGrowing == 0)) {
+        while (x != newSquare.getBoardX() && y != newSquare.getBoardY()) {
             if (board.squares[y][x].piece != null) {
                 return false;
             }
@@ -51,7 +42,11 @@ public class Rook extends Piece {
         return true;
     }
 
-    public boolean canCapture(Point oldPoint, Point newPoint) {
-        return canMove(oldPoint, newPoint);
+    public boolean canCapture(Square newSquare) {
+        if (newSquare.piece == null || newSquare.piece.isWhite == this.isWhite) {
+            return false;
+        }
+
+        return canMove(newSquare);
     }
 }
