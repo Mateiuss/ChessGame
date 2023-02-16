@@ -57,7 +57,7 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
 
         layeredPane.add(this, JLayeredPane.DEFAULT_LAYER);
 
-        piecesForNormalGame();
+        testBoard();
 
         this.setVisible(true);
     }
@@ -73,71 +73,6 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
             blackPlayer.addPiece(piece);
         }
     }
-
-//    public boolean wouldTheMovePutMeInCheck(Square oldSquare, Piece piece, Square square) {
-//        Piece tempPiece = square.piece;
-//        square.piece = piece;
-//        oldSquare.piece = null;
-//
-//        Square myKingsSquare = null;
-//
-//        for (int i = 0; i < 8; i++) {
-//            for (int j = 0; j < 8; j++) {
-//                if (squares[i][j].piece != null && squares[i][j].piece.isWhite == piece.isWhite && squares[i][j].piece instanceof King) {
-//                    myKingsSquare = squares[i][j];
-//                }
-//            }
-//        }
-//
-//        for (int i = 0; i < 8; i++) {
-//            for (int j = 0; j < 8; j++) {
-//                if (squares[i][j].piece != null && squares[i][j].piece.isWhite != piece.isWhite) {
-//                    if (squares[i][j].piece.canCapture(squares[i][j].getLocation(), myKingsSquare.getLocation())) {
-//                        square.piece = tempPiece;
-//                        if (oldSquare != lastClickedSquare) {
-//                            oldSquare.piece = piece;
-//                        }
-//                        return true;
-//                    }
-//                }
-//            }
-//        }
-//
-//        square.piece = tempPiece;
-//        if (oldSquare != lastClickedSquare) {
-//            oldSquare.piece = piece;
-//        }
-//        return false;
-//    }
-
-//    public boolean verifyIfTheOpponentGotCheckmated (boolean isWhite) {
-//        for (int i = 0; i < 8; i++) {
-//            for (int j = 0; j < 8; j++) {
-//                lastClickedSquare = squares[i][j];
-//                lastClickedPiece = squares[i][j].piece;
-//                lastClickedSquare.piece = null;
-//                if (lastClickedPiece != null && lastClickedPiece.isWhite == isWhite) {
-//                    for (int k = 0; k < 8; k++) {
-//                        for (int l = 0; l < 8; l++) {
-//                            if (squares[k][l].piece != null && squares[k][l].piece.isWhite == isWhite) {
-//                                continue;
-//                            }
-//                            if ((squares[k][l].piece == null && lastClickedPiece.canMove(lastClickedSquare.getLocation(), squares[k][l].getLocation())) ||
-//                                lastClickedPiece.canCapture(lastClickedSquare.getLocation(), squares[k][l].getLocation())) {
-//                                if (!wouldTheMovePutMeInCheck(lastClickedSquare, lastClickedPiece, squares[k][l])) {
-//                                    lastClickedSquare.piece = lastClickedPiece;
-//                                    return false;
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//                lastClickedSquare.piece = lastClickedPiece;
-//            }
-//        }
-//
-//        return true;
-//    }
 
     @Override
     public void mouseDragged(MouseEvent e) {
@@ -206,18 +141,17 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
         int y = Math.min(e.getY(), yMax);
         y = Math.max(y, 0);
 
-        if (checkWhereTheMouseWasReleased(this.findComponentAt(x, y), currentPlayer, opponent) == false) {
+        if (!checkWhereTheMouseWasReleased(this.findComponentAt(x, y), currentPlayer, opponent)) {
             return;
         }
 
-//        if (verifyIfTheOpponentGotCheckmated(opponentsColor)) {
-//            System.out.println("Checkmate");
-//            if (opponent.isCheck(currentPlayer)) {
-//                JOptionPane.showMessageDialog(null, "Checkmate! " + (opponentsColor ? "Black" : "White") + " wins!");
-//            } else {
-//                JOptionPane.showMessageDialog(null, "Stalemate!");
-//            }
-//        }
+        if (opponent.noLegalMovesLeft(currentPlayer)) {
+            if (opponent.isCheck(currentPlayer)) {
+                JOptionPane.showMessageDialog(null, "Checkmate! " + (opponentsColor ? "Black" : "White") + " wins!");
+            } else {
+                JOptionPane.showMessageDialog(null, "Stalemate!");
+            }
+        }
     }
 
     @Override
@@ -260,7 +194,7 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
 
     public boolean checkWhereTheMouseWasReleased(Component c, Player currentPlayer, Player opponent) {
         if (c instanceof JLabel) {
-            if (lastClickedPiece.canCapture((Square) c.getParent()) == false
+            if (!lastClickedPiece.canCapture((Square) c.getParent())
             || currentPlayer.wouldThisMoveCauseCheck(lastClickedPiece, (Square) c.getParent(), opponent)) {
                 System.out.println("Can't capture");
                 putThePieceBack();
@@ -312,15 +246,11 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
 
     void testBoard() {
         PieceFactory pieceFactory = PieceFactory.getInstance();
-        // add white pieces without pawns
-        addPiece(pieceFactory.createPiece("Rook", true), 7, 0);
-        addPiece(pieceFactory.createPiece("Knight", true), 7, 1);
-        addPiece(pieceFactory.createPiece("Bishop", true), 7, 2);
-        addPiece(pieceFactory.createPiece("Queen", true), 7, 3);
-        addPiece(pieceFactory.createPiece("King", true), 7, 4);
-        addPiece(pieceFactory.createPiece("Bishop", true), 7, 5);
-        addPiece(pieceFactory.createPiece("Knight", true), 7, 6);
-        addPiece(pieceFactory.createPiece("Rook", true), 7, 7);
+        // add black king in corner, a white king and two white rooks
+        addPiece(pieceFactory.createPiece("King", false), 0, 0);
+        addPiece(pieceFactory.createPiece("King", true), 0, 7);
+        addPiece(pieceFactory.createPiece("Rook", true), 6, 6);
+        addPiece(pieceFactory.createPiece("Rook", true), 7, 1);
     }
 
     void printBoard() {

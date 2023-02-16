@@ -58,6 +58,20 @@ public class Player {
         return wouldCauseCheck;
     }
 
+    public boolean noLegalMovesLeft(Player opponent) {
+        for (Piece piece: pieces) {
+            for (Square[] squares: Board.getInstance().squares) {
+                for (Square square: squares) {
+                    if (piece.canMove(square) && !wouldThisMoveCauseCheck(piece, square, opponent)) {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
     public Piece getKing() {
         return king;
     }
