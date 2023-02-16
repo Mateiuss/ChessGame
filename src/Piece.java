@@ -21,6 +21,9 @@ public abstract class Piece extends JLabel{
         return false;
     }
 
+    public void move(Point oldPoint, Point newPoint) {}
+    public void capture(Point oldPoint, Point newPoint) {}
+
     public static Point getMatrixPoint(Point point) {
         int x = (int) point.getX();
         int y = (int) point.getY();

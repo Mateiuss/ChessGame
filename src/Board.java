@@ -55,7 +55,7 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
 
         layeredPane.add(this, JLayeredPane.DEFAULT_LAYER);
 
-        testBoard();
+        piecesForNormalGame();
 
         this.setVisible(true);
     }
@@ -71,7 +71,6 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
         addPiece(pieceFactory.createPiece("King", true), 0, 4);
         addPiece(pieceFactory.createPiece("King", false), 7, 4);
         addPiece(pieceFactory.createPiece("Rook", true), 0, 0);
-        addPiece(pieceFactory.createPiece("Rook", true), 0, 7);
     }
 
     void printBoard() {
@@ -80,8 +79,6 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
                 if (squares[i][j].piece != null) {
                     switch (squares[i][j].piece.getClass().getSimpleName()) {
                         case "WhitePawn":
-                            System.out.print("P");
-                            break;
                         case "BlackPawn":
                             System.out.print("P");
                             break;
@@ -110,7 +107,7 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
         }
     }
 
-    public void addPieces() {
+    public void piecesForNormalGame() {
         PieceFactory pieceFactory = PieceFactory.getInstance();
 
         for (int i = 0; i < 8; i++) {
@@ -140,15 +137,16 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
         addPiece(pieceFactory.createPiece("King", false), 0, 4);
     }
 
-    public boolean wouldTheMovePutMeInCheck(Square square) {
+    public boolean wouldTheMovePutMeInCheck(Square oldSquare, Piece piece, Square square) {
         Piece tempPiece = square.piece;
-        square.piece = lastClickedPiece;
+        square.piece = piece;
+        oldSquare.piece = null;
 
         Square myKingsSquare = null;
 
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                if (squares[i][j].piece != null && squares[i][j].piece.isWhite == lastClickedPiece.isWhite && squares[i][j].piece instanceof King) {
+                if (squares[i][j].piece != null && squares[i][j].piece.isWhite == piece.isWhite && squares[i][j].piece instanceof King) {
                     myKingsSquare = squares[i][j];
                 }
             }
@@ -156,9 +154,12 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
 
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                if (squares[i][j].piece != null && squares[i][j].piece.isWhite != lastClickedPiece.isWhite) {
+                if (squares[i][j].piece != null && squares[i][j].piece.isWhite != piece.isWhite) {
                     if (squares[i][j].piece.canCapture(squares[i][j].getLocation(), myKingsSquare.getLocation())) {
                         square.piece = tempPiece;
+                        if (oldSquare != lastClickedSquare) {
+                            oldSquare.piece = piece;
+                        }
                         return true;
                     }
                 }
@@ -166,6 +167,9 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
         }
 
         square.piece = tempPiece;
+        if (oldSquare != lastClickedSquare) {
+            oldSquare.piece = piece;
+        }
         return false;
     }
 
@@ -181,9 +185,9 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
                             if (squares[k][l].piece != null && squares[k][l].piece.isWhite == isWhite) {
                                 continue;
                             }
-                            if (lastClickedPiece.canMove(lastClickedSquare.getLocation(), squares[k][l].getLocation()) ||
+                            if ((squares[k][l].piece == null && lastClickedPiece.canMove(lastClickedSquare.getLocation(), squares[k][l].getLocation())) ||
                                 lastClickedPiece.canCapture(lastClickedSquare.getLocation(), squares[k][l].getLocation())) {
-                                if (!wouldTheMovePutMeInCheck(squares[k][l])) {
+                                if (!wouldTheMovePutMeInCheck(lastClickedSquare, lastClickedPiece, squares[k][l])) {
                                     lastClickedSquare.piece = lastClickedPiece;
                                     return false;
                                 }
@@ -196,6 +200,30 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
         }
 
         return true;
+    }
+
+    boolean verifyIfKingIsInCheck (boolean isWhite) {
+        Square myKingsSquare = null;
+
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (squares[i][j].piece != null && squares[i][j].piece.isWhite == isWhite && squares[i][j].piece instanceof King) {
+                    myKingsSquare = squares[i][j];
+                }
+            }
+        }
+
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (squares[i][j].piece != null && squares[i][j].piece.isWhite != isWhite && !(squares[i][j].piece instanceof King)) {
+                    if (squares[i][j].piece.canCapture(squares[i][j].getLocation(), myKingsSquare.getLocation())) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
     @Override
@@ -259,10 +287,12 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
         int y = Math.min(e.getY(), yMax);
         y = Math.max(y, 0);
 
+        printBoard();
+
         Component c = this.findComponentAt(x, y);
         if (c instanceof JLabel) {
             if (((Piece)c).isWhite == lastClickedPiece.isWhite || lastClickedPiece
-                    .canCapture(lastClickedSquare.getLocation(), c.getParent().getLocation()) == false || wouldTheMovePutMeInCheck((Square)c.getParent())) {
+                    .canCapture(lastClickedSquare.getLocation(), c.getParent().getLocation()) == false || wouldTheMovePutMeInCheck(lastClickedSquare, lastClickedPiece, (Square)c.getParent())) {
                 lastClickedSquare.add(lastClickedPiece);
                 lastClickedSquare.piece = lastClickedPiece;
                 lastClickedSquare.validate();
@@ -275,12 +305,13 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
             parent.add(lastClickedPiece);
             parent.validate();
         } else {
-            if (lastClickedPiece.canMove(lastClickedSquare.getLocation(), c.getLocation()) == false || wouldTheMovePutMeInCheck((Square)c) == true) {
+            if (lastClickedPiece.canMove(lastClickedSquare.getLocation(), c.getLocation()) == false || wouldTheMovePutMeInCheck(lastClickedSquare, lastClickedPiece, (Square)c) == true) {
                 lastClickedSquare.add(lastClickedPiece);
                 lastClickedSquare.piece = lastClickedPiece;
                 lastClickedSquare.validate();
                 return;
             }
+            lastClickedPiece.move(lastClickedSquare.getLocation(), c.getLocation());
             lastClickedPiece.neverMoved = false;
             Container parent = (Container) c;
             ((Square)parent).piece = lastClickedPiece;
@@ -290,7 +321,12 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
 
         boolean oppnentsColor = !lastClickedPiece.isWhite;
         if (verifyIfTheOpponentGotCheckmated(oppnentsColor)) {
-            JOptionPane.showMessageDialog(null, "Checkmate! " + (oppnentsColor ? "Black" : "White") + " wins!");
+            System.out.println("Checkmate");
+            if (verifyIfKingIsInCheck(oppnentsColor)) {
+                JOptionPane.showMessageDialog(null, "Checkmate! " + (oppnentsColor ? "Black" : "White") + " wins!");
+            } else {
+                JOptionPane.showMessageDialog(null, "Stalemate!");
+            }
         }
 
     }
