@@ -69,18 +69,22 @@ public class King extends Piece {
         if (Math.abs(newSquare.getBoardX() - this.boardX) == 2) {
             Board board = Board.getInstance();
 
-            int GrowthOfX = this.boardX < newSquare.getBoardX() ? 1 : -1;
-            int x = this.boardX + GrowthOfX;
+            int growthOfX = this.boardX < newSquare.getBoardX() ? 1 : -1;
+            int x = this.boardX + growthOfX;
 
             while (x != 0 && x != 7) {
-                x += GrowthOfX;
+                x += growthOfX;
             }
 
             Piece rook = board.squares[this.boardY][x].piece;
 
             board.squares[this.boardY][x].piece = null;
-            board.squares[this.boardY][x + GrowthOfX].piece = rook;
-            rook.boardX = x + GrowthOfX;
+            board.squares[this.boardY][x].remove(0);
+            board.squares[this.boardY][x].repaint();
+            board.squares[this.boardY][this.boardX + growthOfX].piece = rook;
+            board.squares[this.boardY][this.boardX + growthOfX].add(rook);
+            rook.boardX = this.boardX + growthOfX;
+            board.squares[this.boardY][this.boardX + growthOfX].repaint();
         }
     }
 }
