@@ -7,6 +7,8 @@ public abstract class Piece extends JLabel{
     boolean isWhite;
     int boardX;
     int boardY;
+    Player myPlayer;
+    Player opponentPlayer;
 
     public boolean canMove(Square newSquare) {
         return false;
@@ -16,8 +18,8 @@ public abstract class Piece extends JLabel{
         return false;
     }
 
-    public void move(Point oldPoint, Point newPoint) {}
-    public void capture(Point oldPoint, Point newPoint) {}
+    public void move(Square newSquare) {}
+    public void capture(Square newSquare) {}
 
     public static Point getMatrixPoint(Point point) {
         int x = (int) point.getX();

@@ -25,7 +25,7 @@ public class Player {
 
     public boolean isCheck(Player opponent) {
         for (Piece opponentPiece: opponent.pieces) {
-            if (opponentPiece.canCapture((Square) king.getParent())) {
+            if (opponentPiece.canCapture(getKingSquare())) {
                 System.out.println(opponentPiece.getClass().getSimpleName() + " at " + opponentPiece.boardX + " " + opponentPiece.boardY + " can capture " + king.getClass().getSimpleName());
                 return true;
             }
@@ -78,5 +78,10 @@ public class Player {
 
     public boolean isWhite() {
         return isWhite;
+    }
+
+    private Square getKingSquare() {
+        Board board = Board.getInstance();
+        return board.squares[king.boardY][king.boardX];
     }
 }

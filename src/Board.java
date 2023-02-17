@@ -69,8 +69,12 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
         piece.boardY = y;
         if (piece.isWhite) {
             whitePlayer.addPiece(piece);
+            piece.myPlayer = whitePlayer;
+            piece.opponentPlayer = blackPlayer;
         } else {
             blackPlayer.addPiece(piece);
+            piece.myPlayer = blackPlayer;
+            piece.opponentPlayer = whitePlayer;
         }
     }
 
@@ -176,7 +180,7 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
             parent.remove(0);
         } else {
             parent = (Container) c;
-            lastClickedPiece.move(lastClickedSquare.getLocation(), c.getLocation());
+            lastClickedPiece.move((Square) c);
         }
         ((Square)parent).piece = lastClickedPiece;
         lastClickedPiece.neverMoved = false;

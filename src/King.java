@@ -1,6 +1,3 @@
-import javax.swing.*;
-import java.awt.*;
-
 public class King extends Piece {
     public King(boolean isWhite) {
         if (isWhite) {
@@ -12,189 +9,78 @@ public class King extends Piece {
         this.isWhite = isWhite;
     }
 
-//    public boolean canMove(Point oldPoint, Point newPoint) {;
-//        Point oldMatrixPoint = getMatrixPoint(oldPoint);
-//        Point newMatrixPoint = getMatrixPoint(newPoint);
-//
-//        int dx = (int) newMatrixPoint.getX() - (int) oldMatrixPoint.getX();
-//        int dy = (int) newMatrixPoint.getY() - (int) oldMatrixPoint.getY();
-//
-//        if (dx == 0 && dy == 0) {
-//            return false;
-//        }
-//
-//        if (Math.abs(dx) <= 1 && Math.abs(dy) <= 1) {
-//            return true;
-//        }
-//
-//        if (Math.abs(dx) == 2 && dy == 0 && neverMoved) {
-//            Board board = Board.getInstance();
-//
-//            if (dx == 2) {
-//                if (isWhite) {
-//                    if (oldMatrixPoint.getX() != 4 && oldMatrixPoint.getY() != 7) {
-//                        return false;
-//                    }
-//                    if (board.squares[7][7].piece != null && board.squares[7][7].piece instanceof Rook && board.squares[7][7].piece.neverMoved) {
-//                        if (board.wouldTheMovePutMeInCheck(board.squares[7][4], this ,board.squares[7][5])) {
-//                            return false;
-//                        }
-//                        if (board.wouldTheMovePutMeInCheck(board.squares[7][4], this ,board.squares[7][6])) {
-//                            return false;
-//                        }
-//                        for (int i = 5; i <= 6; i++) {
-//                            if (board.squares[7][i].piece != null) {
-//                                return false;
-//                            }
-//                        }
-//                        return true;
-//                    }
-//                } else {
-//                    if (oldMatrixPoint.getX() != 4 && oldMatrixPoint.getY() != 0) {
-//                        return false;
-//                    }
-//                    if (board.squares[0][7].piece != null && board.squares[0][7].piece instanceof Rook && board.squares[0][7].piece.neverMoved) {
-//                        if (board.wouldTheMovePutMeInCheck(board.squares[0][4], this ,board.squares[0][5])) {
-//                            return false;
-//                        }
-//                        if (board.wouldTheMovePutMeInCheck(board.squares[0][4], this ,board.squares[0][6])) {
-//                            return false;
-//                        }
-//                        for (int i = 5; i <= 6; i++) {
-//                            if (board.squares[0][i].piece != null) {
-//                                return false;
-//                            }
-//                        }
-//                        return true;
-//                    }
-//                }
-//            } else {
-//                if (isWhite) {
-//                    if (oldMatrixPoint.getX() != 4 && oldMatrixPoint.getY() != 7) {
-//                        return false;
-//                    }
-//                    if (board.squares[7][0].piece != null && board.squares[7][0].piece instanceof Rook && board.squares[7][0].piece.neverMoved) {
-//                        if (board.wouldTheMovePutMeInCheck(board.squares[7][4], this ,board.squares[7][3])) {
-//                            return false;
-//                        }
-//                        if (board.wouldTheMovePutMeInCheck(board.squares[7][4], this ,board.squares[7][2])) {
-//                            return false;
-//                        }
-//                        for (int i = 1; i <= 3; i++) {
-//                            if (board.squares[7][i].piece != null) {
-//                                return false;
-//                            }
-//                        }
-//                        return true;
-//                    }
-//                } else {
-//                    if (oldMatrixPoint.getX() != 4 && oldMatrixPoint.getY() != 0) {
-//                        return false;
-//                    }
-//                    if (board.squares[0][0].piece != null && board.squares[0][0].piece instanceof Rook && board.squares[0][0].piece.neverMoved) {
-//                        if (board.wouldTheMovePutMeInCheck(board.squares[0][4], this ,board.squares[0][3])) {
-//                            return false;
-//                        }
-//                        if (board.wouldTheMovePutMeInCheck(board.squares[0][4], this ,board.squares[0][2])) {
-//                            return false;
-//                        }
-//                        for (int i = 1; i <= 3; i++) {
-//                            if (board.squares[0][i].piece != null) {
-//                                return false;
-//                            }
-//                        }
-//                        return true;
-//                    }
-//                }
-//            }
-//        }
-//
-//        return false;
-//    }
+    public boolean canMove(Square newSquare) {
+        if (newSquare.getBoardX() == this.boardX && newSquare.getBoardY() == this.boardY) {
+            return false;
+        }
 
-//    public boolean canCapture(Point oldPoint, Point newPoint) {
-//        return canMove(oldPoint, newPoint);
-//    }
+        if (Math.abs(newSquare.getBoardY() - this.boardY) > 1 || Math.abs(newSquare.getBoardX() - this.boardX) > 2) {
+            return false;
+        }
 
-    public void move(Point oldPoint, Point newPoint) {
-        Point oldMatrixPoint = getMatrixPoint(oldPoint);
-        Point newMatrixPoint = getMatrixPoint(newPoint);
+        if (Math.abs(newSquare.getBoardX() - this.boardX) == 2) {
+            if (this.neverMoved == false) {
+                return false;
+            }
 
-        int dx = (int) newMatrixPoint.getX() - (int) oldMatrixPoint.getX();
-        int dy = (int) newMatrixPoint.getY() - (int) oldMatrixPoint.getY();
-
-        if (Math.abs(dx) == 2 && dy == 0 && neverMoved) {
             Board board = Board.getInstance();
 
-            if (dx == 2) {
-                if (isWhite) {
-                    if (board.squares[7][7].piece != null && board.squares[7][7].piece instanceof Rook && board.squares[7][7].piece.neverMoved) {
-                        for (int i = 5; i <= 6; i++) {
-                            if (board.squares[7][i].piece != null) {
-                                return;
-                            }
-                        }
-                        Piece rook = board.squares[7][7].piece;
-                        board.squares[7][7].piece = null;
-                        board.squares[7][7].remove(rook);
-                        board.squares[7][7].repaint();
-                        board.squares[7][5].piece = rook;
-                        rook.neverMoved = false;
-                        board.squares[7][5].add(rook);
-                        board.squares[7][5].repaint();
-                    }
-                } else {
-                    if (board.squares[0][7].piece != null && board.squares[0][7].piece instanceof Rook && board.squares[0][7].piece.neverMoved) {
-                        for (int i = 5; i <= 6; i++) {
-                            if (board.squares[0][i].piece != null) {
-                                return;
-                            }
-                        }
-                        Piece rook = board.squares[0][7].piece;
-                        board.squares[0][7].piece = null;
-                        board.squares[0][7].remove(rook);
-                        board.squares[0][7].repaint();
-                        board.squares[0][5].piece = rook;
-                        rook.neverMoved = false;
-                        board.squares[0][5].add(rook);
-                        board.squares[0][5].repaint();
+            int GrowthOfX = this.boardX < newSquare.getBoardX() ? 1 : -1;
+            int x = this.boardX + GrowthOfX;
+            int steps = 1;
+
+            while (x != 0 && x != 7) {
+                if (board.squares[this.boardY][x].piece != null) {
+                    return false;
+                }
+                if (steps <= 2) {
+                    if (this.myPlayer.wouldThisMoveCauseCheck(this, board.squares[this.boardY][x], this.opponentPlayer)) {
+                        return false;
                     }
                 }
-            } else {
-                if (isWhite) {
-                    if (board.squares[7][0].piece != null && board.squares[7][0].piece instanceof Rook && board.squares[7][0].piece.neverMoved) {
-                        for (int i = 1; i <= 3; i++) {
-                            if (board.squares[7][i].piece != null) {
-                                return;
-                            }
-                        }
-                        Piece rook = board.squares[7][0].piece;
-                        board.squares[7][0].piece = null;
-                        board.squares[7][0].remove(rook);
-                        board.squares[7][0].repaint();
-                        board.squares[7][3].piece = rook;
-                        rook.neverMoved = false;
-                        board.squares[7][3].add(rook);
-                        board.squares[7][3].repaint();
-                    }
-                } else {
-                    if (board.squares[0][0].piece != null && board.squares[0][0].piece instanceof Rook && board.squares[0][0].piece.neverMoved) {
-                        for (int i = 1; i <= 3; i++) {
-                            if (board.squares[0][i].piece != null) {
-                                return;
-                            }
-                        }
-                        Piece rook = board.squares[0][0].piece;
-                        board.squares[0][0].piece = null;
-                        board.squares[0][0].remove(rook);
-                        board.squares[0][0].repaint();
-                        board.squares[0][3].piece = rook;
-                        rook.neverMoved = false;
-                        board.squares[0][3].add(rook);
-                        board.squares[0][3].repaint();
-                    }
-                }
+
+                x += GrowthOfX;
+                steps++;
             }
+
+            Piece rook = board.squares[this.boardY][x].piece;
+
+            if (rook == null || rook.neverMoved == false || rook.getClass() != Rook.class || rook.isWhite != this.isWhite) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public boolean canCapture(Square newSquare) {
+        if (newSquare.piece == null || newSquare.piece.isWhite == this.isWhite) {
+            return false;
+        }
+
+        if (Math.abs(newSquare.getBoardY() - this.boardY) > 1 || Math.abs(newSquare.getBoardX() - this.boardX) > 1) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public void move(Square newSquare) {
+        if (Math.abs(newSquare.getBoardX() - this.boardX) == 2) {
+            Board board = Board.getInstance();
+
+            int GrowthOfX = this.boardX < newSquare.getBoardX() ? 1 : -1;
+            int x = this.boardX + GrowthOfX;
+
+            while (x != 0 && x != 7) {
+                x += GrowthOfX;
+            }
+
+            Piece rook = board.squares[this.boardY][x].piece;
+
+            board.squares[this.boardY][x].piece = null;
+            board.squares[this.boardY][x + GrowthOfX].piece = rook;
+            rook.boardX = x + GrowthOfX;
         }
     }
 }
