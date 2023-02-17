@@ -149,6 +149,8 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
             return;
         }
 
+        opponent.setEnPassantPawn(null);
+
         if (opponent.noLegalMovesLeft(currentPlayer)) {
             if (opponent.isCheck(currentPlayer)) {
                 JOptionPane.showMessageDialog(null, "Checkmate! " + (opponentsColor ? "Black" : "White") + " wins!");

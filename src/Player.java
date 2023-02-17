@@ -6,6 +6,7 @@ public class Player {
     private final boolean isWhite;
     private final ArrayList<Piece> pieces = new ArrayList<>();
     private Piece king;
+    private Piece enPassantPawn;
 
     public Player(String name, boolean isWhite) {
         this.name = name;
@@ -73,8 +74,12 @@ public class Player {
         return true;
     }
 
-    public Piece getKing() {
-        return king;
+    public void setEnPassantPawn(Piece enPassantPawn) {
+        this.enPassantPawn = enPassantPawn;
+    }
+
+    public Piece getEnPassantPawn() {
+        return enPassantPawn;
     }
 
     public boolean isWhite() {
