@@ -31,7 +31,7 @@ public class Rook extends Piece {
         int x = this.boardX + xIsGrowing;
         int y = this.boardY + yIsGrowing;
 
-        while (x != newSquare.getBoardX() && y != newSquare.getBoardY()) {
+        while (x != newSquare.getBoardX() || y != newSquare.getBoardY()) {
             if (board.squares[y][x].piece != null) {
                 return false;
             }

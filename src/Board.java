@@ -57,7 +57,7 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
 
         layeredPane.add(this, JLayeredPane.DEFAULT_LAYER);
 
-        piecesForNormalGame();
+        testBoard();
 
         this.setVisible(true);
     }
@@ -250,11 +250,11 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
 
     void testBoard() {
         PieceFactory pieceFactory = PieceFactory.getInstance();
-        // add black king in corner, a white king and two white rooks
-        addPiece(pieceFactory.createPiece("King", false), 0, 0);
-        addPiece(pieceFactory.createPiece("King", true), 0, 7);
-        addPiece(pieceFactory.createPiece("Rook", true), 6, 6);
-        addPiece(pieceFactory.createPiece("Rook", true), 7, 1);
+        // add two kings of opposite color, a white rook and a white pawn, all on their starting squares
+        addPiece(pieceFactory.createPiece("King", true), 7, 4);
+        addPiece(pieceFactory.createPiece("King", false), 0, 4);
+        addPiece(pieceFactory.createPiece("Rook", true), 7, 0);
+        addPiece(pieceFactory.createPiece("Pawn", true), 6, 0);
     }
 
     void printBoard() {
