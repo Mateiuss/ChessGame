@@ -62,7 +62,8 @@ public class Player {
         for (Piece piece: pieces) {
             for (Square[] squares: Board.getInstance().squares) {
                 for (Square square: squares) {
-                    if (piece.canMove(square) && !wouldThisMoveCauseCheck(piece, square, opponent)) {
+                    if (((square.piece == null && piece.canMove(square)) || (square.piece != null && piece.canCapture(square))) && !wouldThisMoveCauseCheck(piece, square, opponent)) {
+                        System.out.println(piece.getClass().getSimpleName() + " at " + piece.boardX + " " + piece.boardY + " can move to " + square.getBoardX() + " " + square.getBoardY());
                         return false;
                     }
                 }
