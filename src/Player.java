@@ -44,6 +44,11 @@ public class Player {
             opponent.removePiece(oldPiece);
         }
 
+        Component parent = piece.getParent();
+        if (parent != null) {
+            ((Square) parent).piece = null;
+        }
+
         piece.boardX = newSquare.getBoardX();
         piece.boardY = newSquare.getBoardY();
 
@@ -53,6 +58,11 @@ public class Player {
             opponent.addPiece(oldPiece);
         }
         newSquare.piece = oldPiece;
+
+        if (parent != null) {
+            ((Square) parent).piece = piece;
+        }
+
         piece.boardX = oldX;
         piece.boardY = oldY;
 

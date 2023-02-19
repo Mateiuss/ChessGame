@@ -18,7 +18,9 @@ public abstract class Piece extends JLabel{
         return false;
     }
 
-    public void move(Square newSquare) {}
+    public void move(Square newSquare) {
+
+    }
     public void capture(Square newSquare) {}
 
     public static Point getMatrixPoint(Point point) {

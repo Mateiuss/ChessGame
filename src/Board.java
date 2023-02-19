@@ -57,7 +57,7 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
 
         layeredPane.add(this, JLayeredPane.DEFAULT_LAYER);
 
-        piecesForNormalGame();
+        testBoard();
 
         this.setVisible(true);
     }
