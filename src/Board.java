@@ -247,8 +247,8 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
         PieceFactory pieceFactory = PieceFactory.getInstance();
         addPiece(pieceFactory.createPiece("King", false), 0, 4);
         addPiece(pieceFactory.createPiece("King", true), 7, 4);
+        addPiece(pieceFactory.createPiece("Pawn", true), 6, 1);
         addPiece(pieceFactory.createPiece("Rook", false), 0, 0);
-        addPiece(pieceFactory.createPiece("Pawn", false), 1, 0);
     }
 
     void printBoard() {

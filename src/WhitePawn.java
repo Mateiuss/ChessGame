@@ -63,18 +63,17 @@ public class WhitePawn extends Piece {
         }
 
         if (newSquare.getBoardY() == 0) {
-            myPlayer.removePiece(this);
-            Piece newPiece = PieceFactory.getInstance().createPiece("Queen", true);
-            newSquare.piece = newPiece;
-            newPiece.boardX = newSquare.getBoardX();
-            newPiece.boardY = newSquare.getBoardY();
-            newPiece.myPlayer = myPlayer;
-            newPiece.opponentPlayer = opponentPlayer;
-            newSquare.add(newSquare.piece);
-            newSquare.validate();
-            myPlayer.addPiece(newSquare.piece);
+            promote(newSquare);
         } else {
             super.move(newSquare);
+        }
+    }
+
+    public void capture(Square newSquare) {
+        if (newSquare.getBoardY() == 0) {
+            promote(newSquare);
+        } else {
+            super.capture(newSquare);
         }
     }
 }
