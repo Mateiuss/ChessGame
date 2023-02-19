@@ -57,9 +57,27 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
 
         layeredPane.add(this, JLayeredPane.DEFAULT_LAYER);
 
-        testBoard();
+        piecesForNormalGame();
 
         this.setVisible(true);
+    }
+
+    void reverseBoard() {
+        this.removeAll();
+        for (int i = 7; i >= 0; i--) {
+            for (int j = 0; j < 8; j++) {
+                this.add(squares[i][j]);
+            }
+        }
+    }
+
+    void unreverseBoard() {
+        this.removeAll();
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                this.add(squares[i][j]);
+            }
+        }
     }
 
     public void addPiece(Piece piece, int y, int x) {
@@ -163,6 +181,12 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
 
         if (currentPlayer.checkForInsufficientMaterial() && opponent.checkForInsufficientMaterial()) {
             JOptionPane.showMessageDialog(null, "Insufficient material! Draw!");
+        }
+
+        if (lastClickedPiece.isWhite) {
+            reverseBoard();
+        } else {
+            unreverseBoard();
         }
     }
 
