@@ -84,6 +84,28 @@ public class Player {
         return true;
     }
 
+    public boolean checkForInsufficientMaterial() {
+        if (pieces.size() == 1) {
+            return true;
+        }
+        if (pieces.size() == 2) {
+            if (pieces.get(0) instanceof King && pieces.get(1) instanceof Knight) {
+                return true;
+            }
+            if (pieces.get(0) instanceof King && pieces.get(1) instanceof Bishop) {
+                return true;
+            }
+            if (pieces.get(0) instanceof Knight && pieces.get(1) instanceof King) {
+                return true;
+            }
+            if (pieces.get(0) instanceof Bishop && pieces.get(1) instanceof King) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public void setEnPassantPawn(Piece enPassantPawn) {
         this.enPassantPawn = enPassantPawn;
     }

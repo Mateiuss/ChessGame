@@ -155,8 +155,14 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
             if (opponent.isCheck(currentPlayer)) {
                 JOptionPane.showMessageDialog(null, "Checkmate! " + (opponentsColor ? "Black" : "White") + " wins!");
             } else {
-                JOptionPane.showMessageDialog(null, "Stalemate!");
+                JOptionPane.showMessageDialog(null, "Stalemate! Draw!");
             }
+
+            return;
+        }
+
+        if (currentPlayer.checkForInsufficientMaterial() && opponent.checkForInsufficientMaterial()) {
+            JOptionPane.showMessageDialog(null, "Insufficient material! Draw!");
         }
     }
 
@@ -201,7 +207,7 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
             }
             moveThePieceToTheNewSquare(c);
         } else {
-            if (lastClickedPiece.canMove((Square) c) == false
+            if (!lastClickedPiece.canMove((Square) c)
             || currentPlayer.wouldThisMoveCauseCheck(lastClickedPiece, (Square) c, opponent)) {
                 System.out.println("Can't move");
                 putThePieceBack();
@@ -246,9 +252,10 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
     void testBoard() {
         PieceFactory pieceFactory = PieceFactory.getInstance();
         addPiece(pieceFactory.createPiece("King", false), 0, 4);
+        addPiece(pieceFactory.createPiece("Bishop", false), 0, 5);
+        addPiece(pieceFactory.createPiece("Bishop", true), 7, 5);
         addPiece(pieceFactory.createPiece("King", true), 7, 4);
-        addPiece(pieceFactory.createPiece("Pawn", true), 6, 1);
-        addPiece(pieceFactory.createPiece("Rook", false), 0, 0);
+        addPiece(pieceFactory.createPiece("Bishop", true), 7, 2);
     }
 
     void printBoard() {
@@ -256,25 +263,12 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
             for (int j = 0; j < 8; j++) {
                 if (squares[i][j].piece != null) {
                     switch (squares[i][j].piece.getClass().getSimpleName()) {
-                        case "WhitePawn":
-                        case "BlackPawn":
-                            System.out.print("P");
-                            break;
-                        case "Rook":
-                            System.out.print("R");
-                            break;
-                        case "Knight":
-                            System.out.print("N");
-                            break;
-                        case "Bishop":
-                            System.out.print("B");
-                            break;
-                        case "Queen":
-                            System.out.print("Q");
-                            break;
-                        case "King":
-                            System.out.print("K");
-                            break;
+                        case "WhitePawn", "BlackPawn" -> System.out.print("P");
+                        case "Rook" -> System.out.print("R");
+                        case "Knight" -> System.out.print("N");
+                        case "Bishop" -> System.out.print("B");
+                        case "Queen" -> System.out.print("Q");
+                        case "King" -> System.out.print("K");
                     }
                     System.out.print("  ");
                 } else {
