@@ -86,5 +86,7 @@ public class King extends Piece {
             rook.boardX = this.boardX + growthOfX;
             board.squares[this.boardY][this.boardX + growthOfX].repaint();
         }
+
+        super.move(newSquare);
     }
 }

@@ -170,9 +170,8 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
     public void mouseClicked(MouseEvent e) {}
 
     void moveThePieceToTheNewSquare(Component c) {
-        Container parent;
         if (c instanceof JLabel) {
-            parent = c.getParent();
+            Container parent = c.getParent();
             Piece oldPiece = (Piece) parent.getComponent(0);
             if (lastClickedPiece.isWhite) {
                 blackPlayer.removePiece(oldPiece);
@@ -180,16 +179,10 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
                 whitePlayer.removePiece(oldPiece);
             }
             parent.remove(0);
+            lastClickedPiece.capture((Square) parent);
         } else {
-            parent = (Container) c;
             lastClickedPiece.move((Square) c);
         }
-        ((Square)parent).piece = lastClickedPiece;
-        lastClickedPiece.neverMoved = false;
-        lastClickedPiece.boardX = parent.getX() / 95;
-        lastClickedPiece.boardY = parent.getY() / 95;
-        parent.add(lastClickedPiece);
-        parent.validate();
     }
 
     void putThePieceBack() {
@@ -252,11 +245,10 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
 
     void testBoard() {
         PieceFactory pieceFactory = PieceFactory.getInstance();
-        // add two kings of opposite color, a white rook and a white pawn, all on their starting squares
-        addPiece(pieceFactory.createPiece("King", true), 7, 4);
         addPiece(pieceFactory.createPiece("King", false), 0, 4);
-        addPiece(pieceFactory.createPiece("Rook", true), 7, 0);
-        addPiece(pieceFactory.createPiece("Pawn", true), 6, 0);
+        addPiece(pieceFactory.createPiece("King", true), 7, 4);
+        addPiece(pieceFactory.createPiece("Rook", false), 0, 0);
+        addPiece(pieceFactory.createPiece("Pawn", false), 1, 0);
     }
 
     void printBoard() {

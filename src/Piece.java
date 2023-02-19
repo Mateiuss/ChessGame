@@ -19,16 +19,15 @@ public abstract class Piece extends JLabel{
     }
 
     public void move(Square newSquare) {
-
+        newSquare.piece = this;
+        this.neverMoved = false;
+        this.boardX = newSquare.getBoardX();
+        this.boardY = newSquare.getBoardY();
+        newSquare.add(this);
+        newSquare.validate();
     }
-    public void capture(Square newSquare) {}
-
-    public static Point getMatrixPoint(Point point) {
-        int x = (int) point.getX();
-        int y = (int) point.getY();
-        x = x / 96;
-        y = y / 96;
-        return new Point(x, y);
+    public void capture(Square newSquare) {
+        move(newSquare);
     }
 
     static ImageIcon whiteQueen = new ImageIcon(new ImageIcon("PieceIcons/WhiteQueen.png").getImage().getScaledInstance(96, 96, Image.SCALE_SMOOTH));
